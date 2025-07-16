@@ -6,7 +6,7 @@ def generate_gps_input(df):
     fasta_buffer = StringIO()
     for _, row in df.iterrows():
         fasta_buffer.write(f">{row['gene_name']}\n")
-        fasta_buffer.write(f"{row['sequence']}\n")
+        fasta_buffer.write(f"{row['extracted_sequence']}\n")
     return fasta_buffer.getvalue()
 
 def prepare_excel_download(df, sheet_name="Sheet1"):
