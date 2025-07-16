@@ -4,6 +4,8 @@ from uniprot_utils import fetch_all_sequences
 import sequence_extract
 import align_sequence
 import format_gps_entry
+import process_output
+import plot_utils
 import traceback
 
 def main():
@@ -65,5 +67,31 @@ def main():
         except:
             st.error("An error occurred while processing the file. Please ensure it is formatted correctly.")
             st.text(traceback.format_exc())
+    
+    output_file = st.file_uploader("Upload Output File", type=["csv"])
+
+    if output_file:
+        try:
+            output = pd.read_csv(output_file)
+            st.info("Processing Output file")
+            processed_df = process_output.process_custom_csv(output)
+            st.success("Successfully Processed Output File!")
+            st.info("Plotting Kinase Distribution")
+            plot_utils.plot_kinase_pie_chart(processed_df)
+
+            output_cleaned = format_gps_entry.prepare_excel_download(processed_df)
+
+            st.dataframe(processed_df)
+
+            st.download_button(
+                label="Download Full Output Processed Excel",
+                data=output_cleaned,
+                file_name="processed_output.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
+
+
+        except:
+            st.error("An error occured while processing the output. Please ensure it is formatted correctly.")
 if __name__ == "__main__":
     main()
