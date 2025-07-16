@@ -20,7 +20,7 @@ def main():
                 st.error(f"Input file must contain the following columns: {required_columns}")
                 return
 
-            df = df.dropna(subset=["Modifications in Master Proteins"])
+            df = df.dropna(subset=["Modifications in Master Proteins"]).copy()
 
             all_entries = df.apply(sequence_extract.parse_modifications, axis=1)
             flat_entries = [item for sublist in all_entries for item in sublist]
@@ -28,7 +28,7 @@ def main():
             with st.spinner("Fetching sequences from UniProt..."):
                 complete_df, missing_fasta_dict, fasta_dict = fetch_all_sequences(parsed_df)
             
-            complete_df = complete_df.dropna(subset=["sequence"])
+            complete_df = complete_df.dropna(subset=["sequence"]).copy()
             st.success("Sequences fetched successfully!")
             if missing_fasta_dict:
                 st.warning("Some accessions were not found in the UniProt database. Please check the following:")
