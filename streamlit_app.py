@@ -1,12 +1,14 @@
+import traceback
 import streamlit as st
 import pandas as pd
-from uniprot_utils import fetch_all_sequences
 import sequence_extract
 import align_sequence
 import format_gps_entry
 import process_output
 import plot_utils
-import traceback
+from uniprot_utils import fetch_all_sequences
+
+
 
 def main():
     st.title("Protein Sequence Extractor")
@@ -76,8 +78,19 @@ def main():
             st.info("Processing Output file")
             processed_df = process_output.process_custom_csv(output)
             st.success("Successfully Processed Output File!")
+
+            processed_df = plot_utils.split_kinase_hierarchy(processed_df)
+
+            unique_groups = processed_df["Kinase_Group"].dropna().unique()
+            
             st.info("Plotting Kinase Distribution")
-            plot_utils.plot_kinase_pie_chart(processed_df)
+            plot_utils.plot_kinase_pie_chart(processed_df, group_col="Kinase_Group")
+
+            selected_group = st.selectbox("Select Kinase Group to explore subfamilies:", sorted(unique_groups))
+
+            filtered_df = processed_df[processed_df["Kinase_Group"] == selected_group]
+            st.info(f"Subfamily distribution within {selected_group}")
+            plot_utils.plot_kinase_pie_chart(filtered_df, group_col="Kinase_Subgroup")
 
             output_cleaned = format_gps_entry.prepare_excel_download(processed_df)
 
@@ -93,5 +106,6 @@ def main():
 
         except:
             st.error("An error occured while processing the output. Please ensure it is formatted correctly.")
+            st.text(traceback.format_exc())
 if __name__ == "__main__":
     main()
