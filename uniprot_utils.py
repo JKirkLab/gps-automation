@@ -68,8 +68,6 @@ def req_obsolete_accessions(unique_accessions, entries):
         accession, _sequence = parse_fasta_entry(entry)
         returned_accessions.append(accession)
     missing_in_fasta = set(unique_accessions) - set(returned_accessions)
-    print("Missing obsolete accesions:", missing_in_fasta)
-
     missing_fasta_data = []
     missing_fasta_dict = {}
     for accession in list(missing_in_fasta):
@@ -92,7 +90,6 @@ def fetch_all_sequences(original_df):
     original_keys = set(original_df['accession'].unique())
     missing = original_keys - fasta_keys
     if missing:
-        print("different number of accessions in fasta and original df")
         missing_fasta_dict = req_obsolete_accessions(original_df['accession'].unique(), entries)
         # for k, v in missing_fasta_dict.items():
         #     fasta_dict[k] = v[1]
