@@ -41,6 +41,15 @@ def plot_kinase_pie_chart(df, group_col, kinase_column="Kinase"):
     st.pyplot(fig)
 
 def split_kinase_hierarchy(df):
+    """
+    Splits the primary group and subgroup for the predicted kinase. 
+    
+    Parameters:
+    - df (pd.DataFrame): Dataframe containing predicted kinase data
+
+    Returns:
+    - df (pd.DataFrame): Dataframe containing primary group and subgroup kinase data
+    """
     df = df.copy()
     df['Kinase_Group'] = df['Kinase'].str.split('/').str[0]
     df['Kinase_Subgroup'] = df['Kinase'].str.split("/").str[1]

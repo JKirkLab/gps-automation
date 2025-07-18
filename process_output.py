@@ -1,6 +1,15 @@
 import pandas as pd
 
 def process_custom_csv(df):
+    """
+    Processes the output of GPS(Group Based Prediction System) for kinase prediction
+
+    Parameters:
+    - df (pd.DataFrame): DataFrame containing Kinase prediction data
+
+    Returns:
+    - processed_df (pd.DataFrame): A cleaned dataframe where the genes have been exploded into its own column and filtered for modifications only in position 11.
+    """
     current_gene = None
     output_rows = []
 
