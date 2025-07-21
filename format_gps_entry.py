@@ -5,7 +5,7 @@ import csv
 def generate_gps_input(df):
     fasta_buffer = StringIO()
     for _, row in df.iterrows():
-        fasta_buffer.write(f">{row['gene_name']}\n")
+        fasta_buffer.write(f">{row['gene_name']}|Center = {row['center_index']}\n")
         fasta_buffer.write(f"{row['extracted_sequence']}\n")
     return fasta_buffer.getvalue()
 

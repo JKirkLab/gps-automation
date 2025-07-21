@@ -39,7 +39,7 @@ def main():
         st.header("Usage")
         st.subheader("Preparing the Input")
         st.markdown("""
-            1. Begin by uploading multiple CSV files with the output of GPS.
+            1. Begin by uploading mass spectrometry input data.
             2. The results will appear in the results section with several intermediate log comments.
             3. A table will be displayed with the following columns:
                 - `accession`: Accession of the protein.
@@ -48,6 +48,7 @@ def main():
                 - `gene_name`: The gene name for the corresponding accession.
                 - `sequence`: The full extracted sequence from UniProt for the accession.
                 - `extracted_sequence`: The 21 AA sequence centered around the modification.
+                - `center_index`: The position of the modification within the 21 AA sequence. This is primarily used for edge cases.
             4. A downloadable TXT file button will appear.
                 - The TXT file contains output in the following format:
                     ```text
@@ -57,12 +58,10 @@ def main():
             5. A downloadable Excel file button will appear.
                 - This Excel file is the table described in step 3.
             """)
-
-
         st.subheader("Processing the Output")
         st.markdown("""
-            1. Begin by uploading multiple csv files with the output of GPS.
-                -This will aggregate all the csv files that are uploaded into one large table.
+            1. Begin by uploading multiple csv files from the output of GPS.
+                - This will aggregate all the csv files that are uploaded into one large table.
             2. The results will appear in the results section with several intermediate log comments. 
             3. A pie chart will be displayed for the top level of kinase groupings.
             4. A dropdown will appear that allows the user to select one of the primary kinase groupings
@@ -117,8 +116,7 @@ def main():
                     aligned_df = align_sequence.align_peptide_sequence(complete_df)
                     st.success("Peptide sequences aligned successfully!")
 
-                    st.dataframe(complete_df)
-
+                    st.dataframe(aligned_df)
                     st.info("Generating GPS input format and csv file...")
 
                     gps_input = format_gps_entry.generate_gps_input(aligned_df)
@@ -130,7 +128,7 @@ def main():
                         icon=":material/download:"
                     )
 
-                    excel_buffer = format_gps_entry.prepare_excel_download(complete_df)
+                    excel_buffer = format_gps_entry.prepare_excel_download(aligned_df)
 
                     st.download_button(
                         label="Download Full Excel File",
@@ -167,7 +165,7 @@ def main():
                 plot_utils.plot_kinase_pie_chart(aggregate_df, group_col="Kinase_Group")
 
                 selected_group = st.selectbox("Select Kinase Group to explore subfamilies:", sorted(unique_groups))
-
+    
                 filtered_df = aggregate_df[aggregate_df["Kinase_Group"] == selected_group]
                 st.info(f"Subfamily distribution within {selected_group}")
                 plot_utils.plot_kinase_pie_chart(filtered_df, group_col="Kinase_Subgroup")

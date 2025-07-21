@@ -12,7 +12,9 @@ def extract_surrounding_sequence(sequence, position):
     """
     position -= 1
     l , r = max(position - 10, 0), min(position + 11, len(sequence))
-    return sequence[l:r]
+    extracted = sequence[l:r]
+    relative_pos = position - l
+    return extracted, relative_pos
 
 def align_peptide_sequence(df):
     """
@@ -24,5 +26,11 @@ def align_peptide_sequence(df):
     Returns:
     - df (pd.DataFrame): Dataframe containing the new extracted sequence as a column.
     """
-    df['extracted_sequence'] = df.apply(lambda row: extract_surrounding_sequence(row['sequence'], row['position']), axis=1)
-    return df
+
+    def apply_fn(row):
+        extracted, rel_pos = extract_surrounding_sequence(row['sequence'], row['position'])
+        return pd.Series({'extracted_sequence': extracted, 'center_index': rel_pos})
+
+    df_out = df.copy()
+    df_out[['extracted_sequence', 'center_index']] = df_out.apply(apply_fn, axis=1)
+    return df_out
