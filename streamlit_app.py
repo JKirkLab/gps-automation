@@ -12,7 +12,7 @@ from uniprot_utils import fetch_all_sequences
 
 def main():
     st.title("Downstream Output Grapher & Bounded Amino-Acid Region for Kinase prediction (DOGBARK)")
-    docs_tab, results_tab = st.tabs(["Documentation", "Results"])
+    docs_tab, usage_tab, results_tab = st.tabs(["Documentation", "Usage", "Results"])
     with docs_tab:
         st.header("Documentation")
         st.write("There are several assumptions that the input files require in order for the app to function:")
@@ -35,7 +35,29 @@ def main():
                 Q62261  3xPhospho [S2315(97.6); S2318(100); S2322(97.6)]
                 ```
             """)
+        
+        st.markdown("""
+        - The uploaded output CSV is expected to follow a **pseudo-CSV format** structured as follows:
 
+            - Rows alternate between:
+                - **Header rows** identifying the gene (prefixed with `>`)
+                - **Data rows** describing predicted kinase interactions related to the most recent header
+
+        - **Column headers** (e.g., `Position`, `Kinase`, etc.) should appear **only once** at the top of the file.
+
+        - **Header row format**:
+            - Begins with a `>` character
+            - Followed by a `|` delimiter and a zero-indexed **relative center position**
+            - Example:
+                ```
+                >Ppp1r12b|Center = 10
+                ```
+
+        - The CSV file **must contain a `Kinase` column**, or it will be considered invalid.
+        """)
+
+        
+    with usage_tab:
         st.header("Usage")
         st.subheader("Preparing the Input")
         st.markdown("""
