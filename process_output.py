@@ -16,11 +16,15 @@ def process_custom_csv(df):
     for _, row in df.iterrows():
         first_col = str(row.iloc[0])
         if first_col.startswith(">"):
-            current_gene = first_col.lstrip(">")
+            header = first_col.lstrip(">")
+            parts = header.split("|")
+            current_gene = parts[0]
+            center_str = parts[1].split('=')[1].strip()
+            center = int(center_str)
         else:
             try:
                 position = int(row['Position'])
-                if position == 11:
+                if position - 1 == center:
                     new_row = row.copy()
                     new_row["Gene"] = current_gene
                     output_rows.append(new_row)
