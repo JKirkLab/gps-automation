@@ -8,7 +8,7 @@ def process_custom_csv(df):
     - df (pd.DataFrame): DataFrame containing Kinase prediction data
 
     Returns:
-    - processed_df (pd.DataFrame): A cleaned dataframe where the genes have been exploded into its own column and filtered for modifications only in position 11.
+    - processed_df (pd.DataFrame): A cleaned dataframe where the genes have been exploded into its own column and filtered for modifications that match the relative center position.
     """
     current_gene = None
     output_rows = []

@@ -2,13 +2,29 @@ import pandas as pd
 import requests
 import re
 def chunk_list(lst, size):
+    """
+    Helper function to chunk arrays into workable sizes for uniprot.
+    """
     return [lst[i:i+size] for i in range(0, len(lst), size)]
 
 def extract_accession(header):
+    """
+    Helper function to extract protein accession from a header.
+    """
     match = re.match(r'(?:\w+\|)?(\w+)\|?', header)
     return match.group(1) if match else None
 
 def parse_fasta_entry(entry):
+    """
+    Helper function to parse a FASTA entry into its accession and sequence.
+
+    Parameters:
+    - entry (str): FASTA-formatted string starting with a header line
+
+    Returns:
+    - accession (str or None): Extracted UniProt accession ID
+    - sequence (str or None): Full amino acid sequence (no line breaks)
+    """
     lines = entry.splitlines()
     if not lines:
         return None, None
@@ -19,6 +35,16 @@ def parse_fasta_entry(entry):
 
 
 def query_full_seq(df):
+    """
+    Queries UniProt’s REST API to fetch full amino acid sequences for accessions
+    found in the input DataFrame. Requests are made in chunks of 100 accessions.
+
+    Parameters:
+    - df (pd.DataFrame): DataFrame containing a column named 'accession'
+
+    Returns:
+    - all_fasta_data (List[str]): List of FASTA-formatted response strings
+    """
     accession_list = df['accession'].to_list()
     unique_accessions = list(set(accession_list))
     
@@ -44,6 +70,17 @@ def query_full_seq(df):
     return all_fasta_data
 
 def process_fasta_data(fasta_data):
+    """
+    Parses a list of FASTA-formatted strings into a dictionary of accessions to sequences,
+    and also returns the raw FASTA entries for downstream analysis.
+
+    Parameters:
+    - fasta_data (List[str]): List of FASTA responses (strings) from UniProt
+
+    Returns:
+    - fasta_dict (dict): Mapping from accession → sequence
+    - entries (List[str]): List of raw FASTA entry strings (split on '>')
+    """
     fasta_text = "\n".join(fasta_data)
     entries = fasta_text.strip().split(">")
 
@@ -60,6 +97,17 @@ def process_fasta_data(fasta_data):
 
 
 def req_obsolete_accessions(unique_accessions, entries):
+    """
+    Identifies accessions missing from initial FASTA results and performs fallback requests
+    to fetch them individually (e.g., for obsolete or redirected UniProt entries).
+
+    Parameters:
+    - unique_accessions (List[str]): List of originally requested accessions
+    - entries (List[str]): FASTA entries returned from the initial query
+
+    Returns:
+    - missing_fasta_dict (dict): Mapping of missing accession → (new_accession, sequence) tuples
+    """
     returned_accessions = []
 
     for entry in entries:
@@ -82,6 +130,24 @@ def req_obsolete_accessions(unique_accessions, entries):
     return missing_fasta_dict
 
 def fetch_all_sequences(original_df):
+    """
+    Fetches full amino acid sequences for all UniProt accessions in the input DataFrame.
+
+    This function performs the following:
+    - Queries UniProt in batches (max 100) for accession sequences
+    - Parses FASTA-formatted responses into accession-sequence mappings
+    - Identifies and resolves missing/obsolete accessions
+    - Appends the retrieved sequences as a new column in the original DataFrame
+
+    Parameters:
+    - original_df (pd.DataFrame): DataFrame with an 'accession' column containing UniProt IDs
+
+    Returns:
+    - updated_df (pd.DataFrame): Input DataFrame with an added 'sequence' column
+    - missing_fasta_dict (dict): Dictionary of accessions requiring fallback queries,
+                                 mapping to (new_accession, sequence)
+    - fasta_dict (dict): All successfully retrieved accession to sequence mappings
+    """
     all_fasta_data = query_full_seq(original_df)
     fasta_dict, entries  =  process_fasta_data(all_fasta_data)
     missing_fasta_dict = {}

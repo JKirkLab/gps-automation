@@ -9,6 +9,7 @@ def extract_surrounding_sequence(sequence, position):
     - position (int): One-based index of the position of the post translational modification.
     Returns:
     - extracted_sequence (str): String containing the 21 AA chain centered around the post translational modification.
+    - relative_pos (int): The relative position of the modification within the 21-mer (or shorter if an edge case).
     """
     position -= 1
     l , r = max(position - 10, 0), min(position + 11, len(sequence))
