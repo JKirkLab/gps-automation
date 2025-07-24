@@ -74,7 +74,7 @@ def main():
             4. A downloadable TXT file button will appear.
                 - The TXT file contains output in the following format:
                     ```text
-                    >gene
+                    >gene|Center = #
                     [extracted_sequence]
                     ```
             5. A downloadable Excel file button will appear.
