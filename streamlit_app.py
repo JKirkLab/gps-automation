@@ -56,6 +56,13 @@ def main():
         - The CSV file **must contain a `Kinase` column**, or it will be considered invalid.
         """)
 
+        st.markdown("""
+        - If you look very carefully at the returned full sequence of certain proteins, you might notice that the
+        position of the modification might actually be larger than the length of the full sequence. This is because excel
+        spreadsheets have a maximum of 32767 characters (16-bit signed integer length limit). The tool correctly extracts 
+        positions larger than 32767, but excel cannot store more than that in a single cell, explaining the discrepancy. 
+        """)
+
         
     with usage_tab:
         st.header("Usage")
