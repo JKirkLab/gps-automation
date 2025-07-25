@@ -12,7 +12,10 @@ def extract_surrounding_sequence(sequence, position):
     - relative_pos (int): The relative position of the modification within the 21-mer (or shorter if an edge case).
     """
     position -= 1
-    l , r = max(position - 10, 0), min(position + 11, len(sequence))
+    l = max(position - 10, 0)
+    #python string slicing is gracefully bounded, so no need to worry about too large of a end index
+    r = position + 11 
+    # min(position + 11, len(sequence))
     extracted = sequence[l:r]
     relative_pos = position - l
     return extracted, relative_pos
