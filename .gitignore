@@ -2,3 +2,5 @@
 *.ipynb
 __pycache__/
 *.csv
+/test_data
+.DS_Store

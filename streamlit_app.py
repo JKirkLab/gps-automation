@@ -1,12 +1,12 @@
 import traceback
 import streamlit as st
 import pandas as pd
-import sequence_extract
-import align_sequence
-import format_gps_entry
-import process_output
-import plot_utils
-from uniprot_utils import fetch_all_sequences
+import utils.sequence_extract as sequence_extract
+import utils.align_sequence as align_sequence
+import utils.format_gps_entry as format_gps_entry
+import utils.process_output as process_output
+import utils.plot_utils as plot_utils
+from utils.uniprot_utils import fetch_all_sequences
 
 
 
@@ -37,7 +37,7 @@ def main():
             """)
         
         st.markdown("""
-        - The uploaded output CSV is expected to follow a **pseudo-CSV format** structured as follows:
+        - The uploaded output CSV from GPS is expected to follow a **pseudo-CSV format** structured as follows:
 
             - Rows alternate between:
                 - **Header rows** identifying the gene (prefixed with `>`)
@@ -59,7 +59,7 @@ def main():
         st.markdown("""
         - If you look very carefully at the returned full sequence of certain proteins, you might notice that the
         position of the modification might actually be larger than the length of the full sequence. This is because excel
-        spreadsheets have a maximum of 32767 characters (16-bit signed integer length limit). The tool correctly extracts 
+        cells have a maximum of 32767 characters (16-bit signed integer length limit). The tool will correctly extract
         positions larger than 32767, but excel cannot store more than that in a single cell, explaining the discrepancy. 
         """)
 
