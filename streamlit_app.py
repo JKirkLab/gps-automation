@@ -127,9 +127,12 @@ def main():
                         return
 
                     df = df.dropna(subset=["Modifications in Master Proteins"]).copy()
-
+                    st.dataframe(df)
                     all_entries = df.apply(sequence_extract.parse_modifications, axis=1)
+                    
                     flat_entries = [item for sublist in all_entries for item in sublist]
+
+                    
                     parsed_df = pd.DataFrame(flat_entries)
                     with st.spinner("Fetching sequences from UniProt..."):
                         complete_df, missing_fasta_dict, fasta_dict = fetch_all_sequences(parsed_df)
