@@ -23,7 +23,7 @@ def main():
             - Additionally, the file must be for singular amino acid modifications only (does not support multiple different AA modifications in the same file)
         """)
         st.markdown("""
-            - Each entry in `Modifications in Master Proteins` is expected to follow this standardized format:
+            - Each entry in `Modifications in Master Proteins` is expected to follow this standardized format. Confidence scores are optional:
 
                 ```
                 Accession  #xPhospho [AApos1(confidence); AApos2(confidence); ...]
