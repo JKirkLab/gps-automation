@@ -214,6 +214,22 @@ def main():
                     icon=":material/download:"
                 )
 
+                # absolute difference score - cutoff > 0.15 
+
+                # relative difference (score - cutoff) / (1-cutoff) > xx
+
+                # filter top k kinase predictions
+
+                # for each modification show top kinase prediction and output table
+
+                # for each modification show all kinase predictions after filtering and output table
+
+                # show low confidence predictions in full data pi chart
+
+                # show 2nd, third level groupings among whole pi chart
+
+                # maybe 4th level groups in whole data
+
         
 if __name__ == "__main__":
     main()
