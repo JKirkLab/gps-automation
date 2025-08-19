@@ -190,12 +190,20 @@ def main():
                     except:
                         st.error("An error occured while processing the output. Please ensure it is formatted correctly.")
                         st.text(traceback.format_exc())
+                
+                fig = plot_utils.percent_contour(aggregate_df, levels=(5,10,25,50,75))
+                
+                st.pyplot(fig, clear_figure=True)
+
+                absolute_cutoff = 0.15
+                relative_cutoff = 0.6
+                
+                aggregate_df = process_output.filter_output(aggregate_df, absolute_cutoff, relative_cutoff)
 
                 st.success("Successfully Processed Output File!")
                 unique_groups = aggregate_df["Kinase_Group"].dropna().unique()
                 st.info("Plotting Kinase Distribution")
                 plot_utils.plot_kinase_pie_chart(aggregate_df, group_col="Kinase_Group")
-
                 selected_group = st.selectbox("Select Kinase Group to explore subfamilies:", sorted(unique_groups))
     
                 filtered_df = aggregate_df[aggregate_df["Kinase_Group"] == selected_group]
@@ -216,7 +224,7 @@ def main():
 
                 # absolute difference score - cutoff > 0.15 
 
-                # relative difference (score - cutoff) / (1-cutoff) > xx
+                # relative difference (score - cutoff) / (1-cutoff) > x
 
                 # filter top k kinase predictions
 

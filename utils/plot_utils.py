@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import streamlit as st
+import numpy as np
 
 def plot_kinase_pie_chart(df, group_col, kinase_column="Kinase"):
     """
@@ -54,3 +55,50 @@ def split_kinase_hierarchy(df):
     df['Kinase_Group'] = df['Kinase'].str.split('/').str[0]
     df['Kinase_Subgroup'] = df['Kinase'].str.split("/").str[1]
     return df
+
+
+def percent_contour(df, abs_col='abs_diff', rel_col='rel_diff',
+                    score_col='Score', cutoff_col='Cutoff',
+                    n_abs_bins=200, n_rel_bins=200, clip_rel=None,
+                    levels=(25, 50, 75)):
+    """
+    Make a contour plot where lines correspond to given % of rows surviving.
+    Default levels are 25%, 50%, 75%.
+    """
+    # --- get abs_diff / rel_diff arrays ---
+    if abs_col in df.columns and rel_col in df.columns:
+        x = df[abs_col].to_numpy()
+        y = df[rel_col].to_numpy()
+    elif score_col in df.columns and cutoff_col in df.columns:
+        den = (1 - df[cutoff_col]).replace(0, np.nan)
+        x = (df[score_col] - df[cutoff_col]).to_numpy()
+        y = ((df[score_col] - df[cutoff_col]) / den).to_numpy()
+        y = np.nan_to_num(y, nan=-np.inf)
+    else:
+        raise ValueError("Need (abs_diff & rel_diff) or (Score & Cutoff) columns.")
+
+    if clip_rel is not None:
+        y = np.clip(y, clip_rel[0], clip_rel[1])
+
+    # --- 2D histogram ---
+    x_edges = np.linspace(x.min(), x.max(), n_abs_bins+1)
+    y_edges = np.linspace(y.min(), y.max(), n_rel_bins+1)
+    H, xe, ye = np.histogram2d(x, y, bins=[x_edges, y_edges])
+
+    # --- suffix cumulative counts ---
+    H_rev = H[::-1, ::-1]
+    C_rev = H_rev.cumsum(0).cumsum(1)
+    C = C_rev[::-1, ::-1]
+
+    # --- % surface ---
+    Z = 100.0 * C / max(1, len(x))
+    X, Y = np.meshgrid(xe[:-1], ye[:-1], indexing='ij')
+
+    # --- plot contours for given % levels ---
+    fig, ax = plt.subplots()
+    cs = ax.contour(X, Y, Z, levels=levels)
+    ax.clabel(cs, inline=True, fmt="%.0f%%")
+    ax.set_xlabel("absolute_cutoff")
+    ax.set_ylabel("relative_cutoff")
+    ax.set_title("Rows surviving filter (% contours)")
+    return fig

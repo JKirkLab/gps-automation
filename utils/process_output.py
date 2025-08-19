@@ -1,4 +1,5 @@
 import pandas as pd
+import streamlit as st
 
 def process_custom_csv(df):
     """
@@ -34,3 +35,13 @@ def process_custom_csv(df):
     processed_df.sort_values(by="Gene", inplace=True)
     processed_df.reset_index(drop=True, inplace=True)
     return processed_df
+
+
+def filter_output(df, absolute_cutoff, relative_cutoff):
+    if 'Score' in df.columns and 'Cutoff' in df.columns:
+        df['abs_diff'] = df['Score'] - df['Cutoff']
+        df['rel_diff'] = (df['Score'] - df['Cutoff']) / (1 - df['Cutoff'])
+        return df[(df['abs_diff'] > absolute_cutoff) & (df['rel_diff'] > relative_cutoff)]
+    else:
+        st.error("No score and cutoff columns in final output!")
+        return df
