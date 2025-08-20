@@ -45,3 +45,7 @@ def filter_output(df, absolute_cutoff, relative_cutoff):
     else:
         st.error("No score and cutoff columns in final output!")
         return df
+    
+
+def filter_top_kinase_mod(df):
+    return 

@@ -199,16 +199,15 @@ def main():
                 relative_cutoff = 0.6
                 
                 aggregate_df = process_output.filter_output(aggregate_df, absolute_cutoff, relative_cutoff)
-
                 st.success("Successfully Processed Output File!")
                 unique_groups = aggregate_df["Kinase_Group"].dropna().unique()
                 st.info("Plotting Kinase Distribution")
-                plot_utils.plot_kinase_pie_chart(aggregate_df, group_col="Kinase_Group")
+                plot_utils.plot_kinase_pie_chart(aggregate_df, group_col="Kinase")
                 selected_group = st.selectbox("Select Kinase Group to explore subfamilies:", sorted(unique_groups))
     
                 filtered_df = aggregate_df[aggregate_df["Kinase_Group"] == selected_group]
                 st.info(f"Subfamily distribution within {selected_group}")
-                plot_utils.plot_kinase_pie_chart(filtered_df, group_col="Kinase_Subgroup")
+                plot_utils.plot_kinase_pie_chart(filtered_df, group_col="Kinase_Subgroup",pct=True, legend=True)
 
                 output_cleaned = format_gps_entry.prepare_excel_download(aggregate_df)
 
