@@ -202,6 +202,8 @@ def main():
                 st.success("Successfully Processed Output File!")
                 unique_groups = aggregate_df["Kinase_Group"].dropna().unique()
                 st.info("Plotting Kinase Distribution")
+
+                st.markdown("---")
                 plot_utils.plot_kinase_pie_chart(aggregate_df, group_col="Kinase")
                 selected_group = st.selectbox("Select Kinase Group to explore subfamilies:", sorted(unique_groups))
     
@@ -209,12 +211,29 @@ def main():
                 st.info(f"Subfamily distribution within {selected_group}")
                 plot_utils.plot_kinase_pie_chart(filtered_df, group_col="Kinase_Subgroup",pct=True, legend=True)
 
+                st.markdown("---")
+
+                num_top_k = st.number_input(
+                    "Filter for top-k per kinase predictions", 
+                    min_value=1, 
+                    max_value=5
+                )
+
+                if num_top_k:
+                    df = process_output.filter_top_kinase_mod(aggregate_df, num_top_k)
+                    st.session_state["filtered_df"] = df  
+                else:
+                    st.session_state["filtered_df"] = aggregate_df.head(0)
+
+                st.dataframe(st.session_state["filtered_df"])
+
+                st.markdown("---")
+                st.subheader("Final Output Data")
+
                 output_cleaned = format_gps_entry.prepare_excel_download(aggregate_df)
-
                 st.dataframe(aggregate_df)
-
                 st.download_button(
-                    label="Download Processed Output Excel",
+                    label="Download As Excel File",
                     data=output_cleaned,
                     file_name="processed_output.xlsx",
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -227,9 +246,7 @@ def main():
 
                 # filter top k kinase predictions
 
-                # for each modification show top kinase prediction and output table
-
-                # for each modification show all kinase predictions after filtering and output table
+               
 
                 # show low confidence predictions in full data pi chart
 

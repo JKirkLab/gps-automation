@@ -47,5 +47,9 @@ def filter_output(df, absolute_cutoff, relative_cutoff):
         return df
     
 
-def filter_top_kinase_mod(df):
-    return 
+def filter_top_kinase_mod(df, k):
+    df_sorted = df.sort_values("Score", ascending=False)
+    kth_scores = df_sorted.groupby("Peptide")["Score"].transform(
+        lambda x: x.nlargest(k).min()
+    )
+    return df_sorted[df_sorted["Score"] >= kth_scores]
