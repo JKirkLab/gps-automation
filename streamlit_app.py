@@ -195,8 +195,8 @@ def main():
                 
                 st.pyplot(fig, clear_figure=True)
 
-                absolute_cutoff = 0.15
-                relative_cutoff = 0.6
+                absolute_cutoff = st.number_input("Absolute Cutoff", min_value = 0.0, max_value = 0.9, value = 0.5)
+                relative_cutoff = st.number_input("Relative Cutoff", min_value = 0.0, max_value = 0.9, value = 0.5)
                 
                 aggregate_df = process_output.filter_output(aggregate_df, absolute_cutoff, relative_cutoff)
                 st.success("Successfully Processed Output File!")
